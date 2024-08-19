@@ -1,4 +1,5 @@
 const posts = [];
+const comments = [];
 
 export const getByPost = (id: string) => {
   return posts.find((p) => p.id === id);
@@ -63,7 +64,8 @@ const createPost = (req, res) => {
     title,
     image,
     description,
-    category
+    category,
+    comments: []
   };
   // Add the new post to our array
   posts.push(newPosts);
@@ -76,6 +78,8 @@ const createPost = (req, res) => {
 const createComments = (req, res) => {
   const { id } = req.params
   const { author, content } = req.body;
+  const postID = getByPost(id);
+  const addCommentOnPost = { ...posts[postID] }
 
   if (!author) {
     return res.status(400).json({ message: 'The author is required.' });
@@ -91,7 +95,10 @@ const createComments = (req, res) => {
     content
   };
   // Add the new comment to our array
-  posts.push(addComment);
+  addCommentOnPost.comments.push(addComment.id)
+  comments.push(addComment);
+
+  posts[postID] = addCommentOnPost;
 
   // Return the created comment with a 201 status code
   res.status(201).json(addComment);
