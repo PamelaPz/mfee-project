@@ -1,5 +1,8 @@
-const posts = [];
-const comments = [];
+import { RequestHandler } from 'express';
+import { Post, Comment } from '../models/posts';
+
+const posts: Post[] = [];
+const comments: Comment[] = [];
 
 export const getByPost = (id: string) => {
   return posts.find((p) => p.id === id);
@@ -10,13 +13,13 @@ export const getPostbyCategory = (category: string) => {
 };
 
 // Get all posts
-const getAllPosts = (req, res) => {
+const getAllPosts: RequestHandler = (req, res) => {
   // Return all the posts with a 200 status code
   res.status(200).json(posts);
 };
 
 // Get post by category
-const getPostByCategory = (req, res) => {
+const getPostByCategory: RequestHandler = (req, res) => {
   const { category } = req.params;
 
   const post = getPostbyCategory(category);
@@ -29,7 +32,7 @@ const getPostByCategory = (req, res) => {
 };
 
 // Get post by id
-const getPostById = (req, res) => {
+const getPostById: RequestHandler = (req, res) => {
   const { id } = req.params;
 
   const post = getByPost(id);
@@ -42,7 +45,7 @@ const getPostById = (req, res) => {
 };
 
 // Create post
-const createPost = (req, res) => {
+const createPost: RequestHandler = (req, res) => {
   const { title, image, description, category } = req.body;
 
   if (!title) {
@@ -75,11 +78,9 @@ const createPost = (req, res) => {
 };
 
 // Create comments
-const createComments = (req, res) => {
+const createComments: RequestHandler = (req, res) => {
   const { id } = req.params
   const { author, content } = req.body;
-  const postID = getByPost(id);
-  const addCommentOnPost = { ...posts[postID] }
 
   if (!author) {
     return res.status(400).json({ message: 'The author is required.' });
@@ -88,24 +89,21 @@ const createComments = (req, res) => {
     return res.status(400).json({ message: 'The content is required.' });
   }
 
-  // Generate a new comment
-  const addComment = {
-    id,
-    author,
-    content
-  };
-  // Add the new comment to our array
-  addCommentOnPost.comments.push(addComment.id)
-  comments.push(addComment);
+  const newComment: Comment = {
+    id: id,
+    author: author,
+    content: content
+  }
 
-  posts[postID] = addCommentOnPost;
+  // Add the new comment to our array
+  posts[id].comments.push(newComment)
 
   // Return the created comment with a 201 status code
-  res.status(201).json(addComment);
+  res.status(201).json(newComment);
 };
 
 // Update posts by id
-const updatePostById = (req, res) => {
+const updatePostById: RequestHandler = (req, res) => {
   const { id } = req.params
 
   const postbyId = posts.findIndex((p) => p.id === id);
@@ -131,7 +129,7 @@ const updatePostById = (req, res) => {
 };
 
 // Delete post by id
-const deletePost = (req, res) => {
+const deletePost: RequestHandler = (req, res) => {
   // Retrieve the id from the route params
   const { id } = req.params;
   // Retrieve the index of the post in the array
