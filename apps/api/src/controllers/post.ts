@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Post, Comment } from '../models/posts';
 
 const posts: Post[] = [];
-const comments: Comment[] = [];
+// const comments: Comment[] = [];
 
 export const getByPost = (id: string) => {
   return posts.find((p) => p.id === id);
